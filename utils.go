@@ -1,6 +1,8 @@
 package o
 
 import (
+	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"time"
@@ -53,4 +55,16 @@ func SafeGuardTask(fn func(), panic_sleep time.Duration) {
 		wrap_fn()
 		time.Sleep(panic_sleep)
 	}
+}
+
+func GetSvrMark(svrName string, serVerid ...string) string {
+	hostname, _ := os.Hostname()
+	if pidx := strings.Index(string(hostname), "."); pidx > 0 {
+		hostname = string([]byte(hostname)[:pidx-1])
+	}
+	if len(serVerid) > 0 && len(serVerid[0]) > 0 {
+		return fmt.Sprintf("%s-%s", svrName, serVerid[0])
+	}
+	pid := os.Getpid()
+	return fmt.Sprintf("%s-%s-%d", hostname, svrName, pid)
 }
