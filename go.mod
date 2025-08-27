@@ -1,4 +1,4 @@
-module aio
+module github.com/donnie24680/aio
 
 go 1.25.0
 
