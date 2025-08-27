@@ -124,12 +124,12 @@ func InsertStructTx(tx *gorm.DB, table string, data any) error {
 }
 
 // InsertBatch batch insert records
-func InsertBatch(table string, data []any) error {
+func InsertBatch(table string, data any) error {
 	return GetDBDefault().Table(table).CreateInBatches(data, 100).Error
 }
 
 // InsertBatchTx batch insert records in transaction
-func InsertBatchTx(tx *gorm.DB, table string, data []any) error {
+func InsertBatchTx(tx *gorm.DB, table string, data any) error {
 	if tx == nil {
 		return fmt.Errorf("transaction is nil")
 	}
