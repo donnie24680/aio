@@ -172,7 +172,7 @@ func Delete(table string, args ...Where) error {
 // DeleteTx delete records in transaction
 func DeleteTx(tx *gorm.DB, table string, args ...Where) error {
 	if tx == nil {
-		return fmt.Errorf("delete: invalid condition")
+		return fmt.Errorf("transaction is nil")
 	}
 	if len(args) == 0 || args == nil {
 		return fmt.Errorf("delete: invalid condition")
