@@ -40,5 +40,4 @@ docs
 static
 file
 *env.go
-*_test.go
-*_test.sql
+test/

@@ -24,7 +24,7 @@ func W(str string, arg any, w ...any) Where {
 // Query returns GORM query builder, supports all GORM native methods
 func Query(table string, args ...Where) *gorm.DB {
 	query := GetDBDefault().Table(table)
-	return applyGormWhere(query, args...)
+	return ApplyWhere(query, args...)
 }
 
 // QueryTx query in transaction, returns GORM query builder
@@ -33,7 +33,7 @@ func QueryTx(tx *gorm.DB, table string, args ...Where) *gorm.DB {
 		return nil
 	}
 	query := tx.Table(table)
-	return applyGormWhere(query, args...)
+	return ApplyWhere(query, args...)
 }
 
 // Find query all records
@@ -191,15 +191,15 @@ func Exists(table string, args ...Where) (bool, error) {
 	return count > 0, nil
 }
 
-// applyGormWhere apply WHERE conditions to GORM query - use parameterized queries to prevent SQL injection
-func applyGormWhere(query *gorm.DB, args ...Where) *gorm.DB {
+// ApplyWhere apply WHERE conditions to GORM query - use parameterized queries to prevent SQL injection
+func ApplyWhere(db *gorm.DB, args ...Where) *gorm.DB {
 	for _, w := range args {
 		for _, arg := range w {
 			switch len(arg) {
 			case 2:
 				// Two parameters: field and value
 				field := arg[0].(string)
-				query = query.Where(field+" = ?", arg[1])
+				db = db.Where(field+" = ?", arg[1])
 			case 3:
 				// Three parameters: field, operator, value
 				field := arg[0].(string)
@@ -212,24 +212,24 @@ func applyGormWhere(query *gorm.DB, args ...Where) *gorm.DB {
 
 				switch operator {
 				case "=", ">", "<", ">=", "<=", "!=", "<>":
-					query = query.Where(field+" "+operator+" ?", value)
+					db = db.Where(field+" "+operator+" ?", value)
 				case "like", "not like":
-					query = query.Where(field+" "+operator+" ?", value)
+					db = db.Where(field+" "+operator+" ?", value)
 				case "in", "not in":
-					query = query.Where(field+" "+operator+" (?)", value)
+					db = db.Where(field+" "+operator+" (?)", value)
 				case "between", "not between":
 					if slice, ok := value.([]interface{}); ok && len(slice) == 2 {
-						query = query.Where(field+" "+operator+" ? AND ?", slice[0], slice[1])
+						db = db.Where(field+" "+operator+" ? AND ?", slice[0], slice[1])
 					}
 				}
 			default:
 				sqlStr := arg[0].(string)
 				params := arg[1:]
-				query = query.Where(sqlStr, params...)
+				db = db.Where(sqlStr, params...)
 			}
 		}
 	}
-	return query
+	return db
 }
 
 // setTimeFields automatically set time fields in struct through reflection
