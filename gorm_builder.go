@@ -1,7 +1,6 @@
 package o
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -10,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var ErrRecordNotFound = errors.New("record not found")
+var ErrRecordNotFound = gorm.ErrRecordNotFound
 
 // Where condition query type, using [][]any format
 type Where [][]any
